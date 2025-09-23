@@ -1047,3 +1047,963 @@
     padding: 1rem;
   }
 }
+
+/* 新增樣式 - 整體結果分析 */
+.overall-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.overall-summary h3,
+.comprehensive-analysis h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 1rem 0;
+}
+
+.verification-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+  min-width: 80px;
+}
+
+.verification-badge.correct {
+  background-color: #c6f6d5;
+  color: #22543d;
+  border: 1px solid #9ae6b4;
+}
+
+.verification-badge.incorrect {
+  background-color: #fed7d7;
+  color: #742a2a;
+  border: 1px solid #feb2b2;
+}
+
+.credibility-score,
+.probability-score {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.credibility-score .score-bar,
+.probability-score .score-bar {
+  flex: 1;
+  height: 8px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.credibility-score .score-fill,
+.probability-score .score-fill {
+  height: 100%;
+  /* background: linear-gradient(90deg, rgb(221, 208, 164), rgb(162, 135, 46)); */
+  background: linear-gradient(90deg, rgb(125, 193, 218), rgb(69, 102, 137));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.credibility-score span,
+.probability-score span {
+  font-weight: 600;
+  color: #2d3748;
+  min-width: 40px;
+  text-align: right;
+}
+
+.weight-calculation-details {
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.weight-calculation-details h4 {
+  color: #343c49;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.detail-item span:first-child {
+  color: #718096;
+  font-weight: 500;
+}
+
+.detail-item span:last-child {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.detail-item .final-score {
+  color: #3182ce;
+  font-size: 1.1rem;
+}
+
+/* 分數計算表格樣式 - 法律專業配色 */
+.score-calculation-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 1.5rem;
+  text-align: center;
+  /* position: relative;
+  overflow: hidden; */
+}
+
+.score-calculation-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgb(203, 163, 54);
+}
+
+.score-calculation-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, rgb(203, 163, 54), rgb(221, 208, 164));
+}
+
+.score-calculation-section:hover::before {
+  opacity: 0;
+}
+
+.score-calculation-section h4 {
+  color: rgb(63, 74, 85);
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid rgba(203, 163, 54, 0.3);
+}
+
+.score-table-container {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(63, 74, 85, 0.15);
+  border: 1px solid rgba(203, 163, 54, 0.2);
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.score-table thead {
+  background: rgb(63, 74, 85);
+}
+
+.score-table th {
+  padding: 1rem 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  color: rgb(246, 241, 235);
+  /* border-bottom: 2px solid rgb(203, 163, 54); */
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.score-table td {
+  padding: 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(63, 74, 85, 0.1);
+  /* color: rgb(63, 74, 85); */
+  background-color: white;
+}
+
+.score-item {
+  background-color: rgb(63, 74, 85);
+}
+
+.score-table tbody tr:first-child {
+  background-color: white;
+}
+
+.score-table tbody tr:first-child td {
+  background-color: white;
+}
+
+.score-table tbody tr:hover {
+  background-color: rgba(63, 74, 85, 0.02);
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+.score-value {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: rgb(63, 74, 85);
+  background-color: #f7fafc;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.weight-value {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: rgb(203, 163, 54);
+  background-color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.weighted-score {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: rgb(63, 74, 85);
+  background-color: #f7fafc;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.calculation-row {
+  background-color: #9da2a5;
+  /* border-top: 2px solid rgb(203, 163, 54); */
+  font-weight: 600;
+}
+
+.calculation-row td {
+  background-color: rgba(228, 220, 200, 0.982);
+}
+
+.calculation-formula {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: rgb(63, 74, 85);
+  text-align: left;
+  padding-left: 1rem;
+  background-color: #9da2a5;
+  border-radius: 4px;
+}
+
+.calculation-result {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: rgb(63, 74, 85);
+  background-color: #9da2a5;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.final-score-row {
+  background-color: #f7fafc;
+  /* border-top: 3px solid rgb(203, 163, 54); */
+  font-weight: 600;
+}
+
+.final-score-value {
+  font-family: 'Courier New', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  /* color: rgb(203, 163, 54); */
+  background-color: #f7fafc;
+  padding: 0.75rem;
+  border-radius: 6px;
+}
+
+/* LLM 和 SLM 分析樣式 */
+.llm-analysis,
+.slm-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.verification-result {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.analysis-text {
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.analysis-text h3 {
+  color: #4a5568;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.analysis-text p {
+  color: #2d3748;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* 整體結果分析樣式 */
+.overall-results-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.overall-results-section .section-title {
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 3px solid #4299e1;
+  padding-bottom: 0.5rem;
+}
+
+/* 詳細分析樣式 */
+.analysis-summary {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.analysis-summary .section-title {
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 3px solid #48bb78;
+  padding-bottom: 0.5rem;
+}
+
+.analysis-text h3 {
+  color: #4a5568;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.overall-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 5rem;
+}
+
+.overall-item {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.overall-item h3 {
+  color: #495057;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.verification-badge {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  min-width: 100px;
+  margin-bottom: 0.5rem;
+}
+
+.verification-badge.correct {
+  background-color: #d4edda;
+  color: #155724;
+  border: 2px solid #c3e6cb;
+}
+
+.verification-badge.incorrect {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 2px solid #f5c6cb;
+}
+
+.credibility-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.credibility-score {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+.credibility-score .score-bar {
+  flex: 1;
+  height: 12px;
+  background-color: #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.credibility-score .score-fill {
+  height: 100%;
+  /* background: linear-gradient(90deg, rgb(221, 208, 164), rgb(162, 135, 46)); */
+  background: linear-gradient(90deg, rgb(125, 193, 218), rgb(69, 102, 137));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.score-value {
+  font-weight: 700;
+  color: #2d3748;
+  font-size: 1.1rem;
+  min-width: 50px;
+  text-align: right;
+}
+
+.comprehensive-analysis {
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.comprehensive-analysis h3 {
+  color: #4a5568;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* 公式計算區域樣式 */
+.formula-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.formula-section:hover{
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgb(203, 163, 54);
+}
+
+.formula-section h4 {
+  color: rgb(63, 74, 85);
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid rgba(203, 163, 54, 0.3);
+}
+
+/* formula / score section heads mimic feature-icon header layout */
+.formula-head,
+.score-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.feature-icon.mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  color: rgb(46, 68, 91);
+  font-size: 16px;
+}
+
+.formula-display {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+/* 公式圖片樣式 */
+.formula-image {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.formula-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 權重說明樣式 */
+.formula-explanation {
+  background-color: white;
+  border: 1px solid #bee3f8;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.formula-explanation h5 {
+  color: #2b6cb0;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 2px solid #bee3f8;
+  padding-bottom: 0.5rem;
+}
+
+.weight-explanation {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.weight-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.weight-item:hover {
+  background-color: #e3f2fd;
+  border-color: #bbdefb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.weight-label {
+  color: #2b6cb0;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.weight-value {
+  color: #1a365d;
+  font-weight: 700;
+  font-size: 1.1rem;
+  font-family: 'Courier New', monospace;
+  background-color: #e6fffa;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.weight-desc {
+  color: #4a5568;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.formula-text {
+  background-color: white;
+  border: 1px solid #bee3f8;
+  border-radius: 6px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.formula-text p {
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2b6cb0;
+}
+
+.formula-values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.formula-param {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: white;
+  border: 1px solid #bee3f8;
+  border-radius: 6px;
+}
+
+.formula-param span:first-child {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.param-value {
+  color: #2b6cb0;
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+}
+
+/* 計算過程樣式 */
+.calculation-item {
+  background-color: #f7fafc;
+  border: 2px solid #e2e8f0;
+}
+
+.calculation-text {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #4a5568;
+  word-break: break-all;
+}
+
+.calculation-result {
+  background-color: #e6fffa;
+  /* border: 2px solid #81e6d9; */
+}
+
+.calculation-result-value {
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #234e52;
+}
+
+.weight-calculation-details h4 {
+  color: #718096;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.detail-item span:first-child {
+  color: #1a202c;
+  font-weight: 550;
+  font-size: 1rem;
+}
+
+.detail-value {
+  color: #2d3748;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.detail-value.highlight {
+  color: #3182ce;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.detail-item.final-score-item {
+  background-color: #e3f2fd;
+  border: 2px solid #bbdefb;
+  font-weight: 600;
+}
+
+.verification-note,
+.credibility-note {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* 辯論觀點樣式 */
+.debate-points {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.advocate-points,
+.skeptic-points {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.advocate-points h4,
+.skeptic-points h4 {
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.advocate-points ul,
+.skeptic-points ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.advocate-points li,
+.skeptic-points li {
+  padding: 0.25rem 0;
+  font-size: 0.8rem;
+  color: #6c757d;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.advocate-points li:last-child,
+.skeptic-points li:last-child {
+  border-bottom: none;
+}
+
+.advocate-points li:before {
+  content: "✓ ";
+  color: #28a745;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.skeptic-points li:before {
+  content: "✗ ";
+  color: #dc3545;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+/* 判決文字樣式 */
+.judgment-text {
+  background-color: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+}
+
+.judgment-text p {
+  margin: 0;
+  color: #1565c0;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* 驗證結果樣式 */
+.verification-result {
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.verification-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+  min-width: 80px;
+}
+
+.verification-badge.correct {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.verification-badge.incorrect {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* 分析觀點樣式 */
+.analysis-perspective {
+  margin-top: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.analysis-perspective h4 {
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.analysis-perspective p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .debate-points {
+    grid-template-columns: 1fr;
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .credibility-score,
+  .probability-score {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .formula-display {
+    gap: 1rem;
+  }
+  
+  .weight-item {
+    padding: 0.75rem;
+  }
+  
+  .weight-label {
+    font-size: 0.9rem;
+  }
+  
+  .weight-value {
+    font-size: 1rem;
+  }
+  
+  .weight-desc {
+    font-size: 0.8rem;
+  }
+  
+  .score-table {
+    font-size: 0.8rem;
+  }
+  
+  .score-table th,
+  .score-table td {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .score-table th {
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+  }
+  
+  .calculation-formula {
+    font-size: 0.7rem;
+    padding-left: 0.5rem;
+  }
+  
+  .final-score-value {
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+  
+  .score-calculation-section {
+    padding: 1.5rem;
+  }
+  
+  .score-calculation-section h4 {
+    font-size: 1.1rem;
+  }
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .credibility-score,
+  .probability-score {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .overall-analysis-btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8rem;
+  }
+}
