@@ -434,8 +434,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                               <button
                                 className="detail-btn llm-btn"
                                 onClick={() => {
-                                  console.log('LLM 
-                                     analysisResult?.weight_calculation_json, analysisResult?.fact_check_result_json);
+                                  console.log('LLM analysis:', analysisResult?.weight_calculation_json, analysisResult?.fact_check_result_json);
                                   onOpenAnalysis && onOpenAnalysis('llm', {
                                     weight_calculation_json: analysisResult.weight_calculation_json,
                                     fact_check_result_json: analysisResult.fact_check_result_json
