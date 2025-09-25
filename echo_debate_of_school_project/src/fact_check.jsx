@@ -110,7 +110,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     }
   }
 
-  // 搜索功能：先查 Cofacts，再組合分析結果
+  // 簡化的搜索功能：只使用本地模擬數據
   const handleSearch = async () => {
     if (!searchInput.trim()) return
 
@@ -434,7 +434,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                               <button
                                 className="detail-btn llm-btn"
                                 onClick={() => {
-                                  console.log('LLM data:', analysisResult?.weight_calculation_json, analysisResult?.fact_check_result_json);
+                                  console.log('LLM 
+                                     analysisResult?.weight_calculation_json, analysisResult?.fact_check_result_json);
                                   onOpenAnalysis && onOpenAnalysis('llm', {
                                     weight_calculation_json: analysisResult.weight_calculation_json,
                                     fact_check_result_json: analysisResult.fact_check_result_json
