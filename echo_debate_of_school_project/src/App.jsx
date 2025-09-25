@@ -17,9 +17,6 @@ function App() {
   const [analysisResult, setAnalysisResult] = useState(null)
   const [showRealTimeAnalysis, setShowRealTimeAnalysis] = useState(false)
 
-<<<<<<< HEAD
-  // 檢查URL路由
-=======
   // 頁面切換函數 - 強制滾動到最上層
   const handleTabChange = (tab) => {
     setCurrentTab(tab);
@@ -32,7 +29,6 @@ function App() {
   }
 
   // 檢查URL路由和session_id參數
->>>>>>> 38f50bc (佈署中失敗，重新建置doccker)
   useEffect(() => {
     const path = window.location.pathname;
     const urlParams = new URLSearchParams(window.location.search);
