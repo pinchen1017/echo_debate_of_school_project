@@ -1,3 +1,23 @@
+# 快速修復部署問題
+
+## 🚨 問題
+您的 Docker 部署持續失敗，我們需要改用更簡單的方法。
+
+## ✅ 解決方案：使用 Node.js 環境
+
+### 步驟 1：刪除 Docker 相關文件
+```bash
+# 刪除 Dockerfile（暫時不需要）
+del Dockerfile
+del docker-compose.yml
+del nginx.conf
+del start.sh
+```
+
+### 步驟 2：修改後端代碼
+需要修改 server/index.js，讓它同時服務前端靜態文件：
+
+```javascript
 import express from "express";
 import cors from "cors";
 import fs from "fs";
@@ -41,9 +61,13 @@ app.get("/api/session/:session_id", (req, res) => {
   }
 });
 
+// 處理所有其他路由，返回前端應用
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../echo_debate_of_school_project/dist/index.html'));
+});
+
 // 轉換session數據為前端需要的格式
 function convertSessionToAnalysisResult(sessionData) {
-  // 從session數據中提取需要的字段
   const state = sessionData.state;
   
   return {
@@ -109,10 +133,33 @@ function convertSessionToAnalysisResult(sessionData) {
   };
 }
 
-// 處理所有其他路由，返回前端應用
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../echo_debate_of_school_project/dist/index.html'));
-});
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+```
+
+### 步驟 3：在 Render 中重新創建服務
+1. 刪除現有的 Web Service
+2. 創建新的 Web Service
+3. 選擇 **Node** 環境（不是 Docker）
+4. 配置：
+   - Build Command: `npm run build`
+   - Start Command: `npm start`
+   - Environment: `Node`
+
+### 步驟 4：提交並推送
+```bash
+git add .
+git commit -m "Switch to Node.js deployment, remove Docker dependencies"
+git push origin main
+```
+
+## 🎯 為什麼這樣更好？
+1. **更簡單**：不需要 Docker 配置
+2. **更可靠**：Render 的 Node.js 環境更穩定
+3. **更快速**：構建時間更短
+4. **更易調試**：錯誤信息更清晰
+
+## 🚀 部署成功後
+您將能夠訪問：
+- 首頁: `https://your-app-name.onrender.com`
+- 特定session: `https://your-app-name.onrender.com/?session_id=b19e3815-6cb8-4221-a273-3818d1c9f6cc`
