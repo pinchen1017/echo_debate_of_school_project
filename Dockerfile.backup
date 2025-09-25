@@ -1,0 +1,45 @@
+# 多階段構建 - 前端
+FROM node:18-alpine AS frontend-builder
+
+WORKDIR /app/frontend
+COPY echo_debate_of_school_project/package*.json ./
+RUN npm ci
+
+COPY echo_debate_of_school_project/ ./
+RUN npm run build
+
+# 多階段構建 - 後端
+FROM node:18-alpine AS backend-builder
+
+WORKDIR /app/backend
+COPY server/package*.json ./
+RUN npm ci
+
+COPY server/ ./
+
+# 最終階段 - 運行環境
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 安裝nginx用於服務靜態文件
+RUN apk add --no-cache nginx
+
+# 複製前端構建結果
+COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
+
+# 複製後端代碼
+COPY --from=backend-builder /app/backend /app/backend
+
+# 複製nginx配置
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# 創建啟動腳本
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+# 暴露端口
+EXPOSE 80 3000
+
+# 啟動服務
+CMD ["/app/start.sh"]

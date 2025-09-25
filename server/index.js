@@ -1,212 +1,107 @@
 import express from "express";
 import cors from "cors";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
-const runs = new Map();    // demo 狀態
-const streams = new Map(); // run_id -> Set(res)
-
-const signToken = (rid) => jwt.sign({ rid }, JWT_SECRET, { expiresIn: "24h" });
-const verifyToken = (req, res, next) => {
-  try {
-    const raw = req.query.t || req.headers.authorization?.replace("Bearer ", "");
-    if (!raw) return res.status(401).json({ error: "missing token" });
-    const { rid } = jwt.verify(raw, JWT_SECRET);
-    req.rid = rid;
-    next();
-  } catch {
-    res.status(401).json({ error: "invalid token" });
-  }
-};
+// 載入靜態session數據
+const sessionData = JSON.parse(fs.readFileSync(path.join(__dirname, '../session-b19e3815-6cb8-4221-a273-3818d1c9f6cc.json'), 'utf8'));
 
 app.get("/api/health", (_, res) => res.json({ ok: true }));
 
-app.post("/api/runs", (req, res) => {
-  const id = "rk_" + Math.random().toString(36).slice(2);
-  runs.set(id, { id, status: "running", progress: 0, overview: null, analysisResult: null });
-
-  // 2 秒推中間進度
-  setTimeout(() => pushPatch(id, {
-    progress: 0.4,
-    overview: { verdict: "不確定", score_true: 0.52, last_updated: new Date().toISOString() },
-    analysisResult: partialAnalysis()
-  }), 2000);
-
-  // 5 秒推最終完成
-  setTimeout(() => pushPatch(id, {
-    status: "done",
-    progress: 1,
-    overview: { verdict: "假消息", score_true: 0.18, last_updated: new Date().toISOString() },
-    analysisResult: fullAnalysis()
-  }), 5000);
-
-  res.json({
-    run_id: id,
-    quick_verdict: { label: "不確定", score_true: 0.52, reason: "正在收集證據" },
-    deep_link: `http://localhost:5173/r/${id}?t=${signToken(id)}`
-  });
+// 簡化的API端點 - 只提供特定session的數據
+app.get("/api/session/:session_id", (req, res) => {
+  const sessionId = req.params.session_id;
+  
+  if (sessionId === "b19e3815-6cb8-4221-a273-3818d1c9f6cc") {
+    // 轉換session數據為前端需要的格式
+    const analysisResult = convertSessionToAnalysisResult(sessionData);
+    res.json({
+      status: "done",
+      progress: 1,
+      overview: {
+        verdict: "假消息",
+        score_true: 0.18,
+        last_updated: new Date().toISOString()
+      },
+      analysisResult: analysisResult
+    });
+  } else {
+    res.status(404).json({ error: "Session not found" });
+  }
 });
 
-app.get("/api/runs/:id", verifyToken, (req, res) => {
-  const id = req.params.id;
-  if (id !== req.rid) return res.status(403).json({ error: "rid mismatch" });
-  const r = runs.get(id);
-  if (!r) return res.status(404).json({ error: "not found" });
-  const { status, progress, overview, analysisResult } = r;
-  res.json({ status, progress, overview, analysisResult });
-});
-
-app.get("/api/runs/:id/stream", verifyToken, (req, res) => {
-  const id = req.params.id;
-  if (id !== req.rid) return res.status(403).json({ error: "rid mismatch" });
-  res.set({ "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive" });
-  res.flushHeaders?.();
-
-  const set = streams.get(id) ?? new Set();
-  set.add(res);
-  streams.set(id, set);
-
-  const r = runs.get(id);
-  if (r) res.write(`data: ${JSON.stringify(shape(r))}\n\n`);
-
-  req.on("close", () => { set.delete(res); if (set.size === 0) streams.delete(id); res.end(); });
-});
-
-//給模型/流程用的更新端點，日後接真資料
-app.post("/api/runs/:id/update", (req, res) => {
-  const id = req.params.id;
-  const r = runs.get(id);
-  if (!r) return res.status(404).json({ error: "not found" });
-  const patch = req.body.patch || {};
-  const next = { ...r, ...patch };
-  if (patch.analysisResult) next.analysisResult = { ...(r.analysisResult || {}), ...patch.analysisResult };
-  runs.set(id, next);
-  broadcast(id, shape(next));
-  res.json({ ok: true });
-});
-
-// helpers
-const shape = ({ status, progress, overview, analysisResult }) => ({ status, progress, overview, analysisResult });
-const broadcast = (id, payload) => {
-  const set = streams.get(id);
-  if (!set) return;
-  const data = `data: ${JSON.stringify(payload)}\n\n`;
-  for (const res of set) res.write(data);
-};
-const pushPatch = (id, patch) => {
-  const cur = runs.get(id);
-  if (!cur) return;
-  const next = { ...cur, ...patch };
-  if (patch.analysisResult) next.analysisResult = { ...(cur.analysisResult || {}), ...patch.analysisResult };
-  runs.set(id, next);
-  broadcast(id, shape(next));
-};
-
-// 完整的分析結果格式（符合您提供的JSON結構）
-function partialAnalysis() {
+// 轉換session數據為前端需要的格式
+function convertSessionToAnalysisResult(sessionData) {
+  // 從session數據中提取需要的字段
+  const state = sessionData.state;
+  
   return {
-    newsCorrectness: Math.random() > 0.5 ? '真實' : '假消息',
-    ambiguityScore: Math.floor(Math.random() * 100),
-    analysis: '正在蒐集與比對證據，初步結果仍不確定。',
-    references: [
-      'https://example.com/reference1',
-      'https://example.com/reference2'
-    ],
-    models: {
-      n8n: {
-        correctness: Math.floor(Math.random() * 100),
-        truthfulness: Math.floor(Math.random() * 100),
-        perspective: '新聞內容與摘要一致，提供了貨到付款詐騙退貨退款的相關步驟，並提及官方回應及爭議點，支持了輸入文本的真實性。'
-      },
-      llm: {
-        correctness: Math.floor(Math.random() * 100),
-        truthfulness: Math.floor(Math.random() * 100),
-        perspective: '大型語言模型基於語料判讀，觀點偏中立，對來源可信度持審慎態度。'
-      }
+    weight_calculation_json: {
+      llm_label: "完全錯誤",
+      llm_score: 0,
+      slm_score: 0.9795,
+      jury_score: -0.7244,
+      final_score: 0.035
     },
-    debate: {
-      prosecution: [
-        { speaker: '正方', message: '已有相左報導', timestamp: '10:30' },
-        { speaker: '正方', message: '等待官方說法', timestamp: '10:31' }
+    final_report_json: {
+      topic: "國高中改10點上課現在實施中",
+      overall_assessment: state.curation_raw || "分析結果",
+      jury_score: 72,
+      jury_brief: "證據不足。未全面實施，但提案已達附議門檻。",
+      evidence_digest: [
+        "公共政策網路參與平台：國高中改10點上課提案已達萬人附議門檻，教育部須於11/14前回應。",
+        "教育部 (2017年類似提案處理)：曾有建議9點上課提案，最終未全面採納，僅放寬早自習彈性。",
+        "教育部 (2022年作息調整)：修正發布作息注意事項，讓高中生第一節課前時間更有彈性，非全面延後。",
+        "Yahoo新聞網路投票：超過六成參與者不贊成或完全不贊成國高中改為10點上課。",
+        "社群觀察：學生普遍支持，家長、教育工作者多數反對或擔憂實際操作。"
       ],
-      defense: [
-        { speaker: '反方', message: '等待官方說法', timestamp: '10:31' }
-      ],
-      judge: {
-        verdict: '尚待釐清',
-        confidence: 40
-      }
-    }
-  };
-}
-
-function fullAnalysis() {
-  return {
-    newsCorrectness: Math.random() > 0.5 ? '真實' : '假消息',
-    ambiguityScore: Math.floor(Math.random() * 100),
-    analysis: '根據多個可靠來源的交叉驗證，此消息的真實性存在爭議。專家意見分歧，需要進一步調查。',
-    references: [
-      'https://example.com/reference1',
-      'https://example.com/reference2',
-      'https://example.com/reference3'
-    ],
-    models: {
-      n8n: {
-        correctness: Math.floor(Math.random() * 100),
-        truthfulness: Math.floor(Math.random() * 100),
-        perspective: '新聞內容與摘要一致，提供了貨到付款詐騙退貨退款的相關步驟，並提及官方回應及爭議點，支持了輸入文本的真實性。',
-        references: [
-          'https://example.com/reference1',
-          'https://example.com/reference2',
-          'https://example.com/reference3'
-        ],
-      },
-      llm: {
-        correctness: Math.floor(Math.random() * 100),
-        truthfulness: Math.floor(Math.random() * 100),
-        perspective: '大型語言模型基於語料判讀，觀點偏中立，對來源可信度持審慎態度。\n\n\n\n',
-        references: [
-          'https://example.com/reference1',
-          'https://example.com/reference2',
-          'https://example.com/reference3'
-        ],
-      },
-      slm: {
-        correctness: Math.floor(Math.random() * 100),
-        truthfulness: Math.floor(Math.random() * 100),
-        perspective: '小型模型根據關鍵特徵比對，指出部分敘述缺乏佐證。',
-        references: [
-          'https://example.com/reference1',
-          'https://example.com/reference2',
-          'https://example.com/reference3'
-        ],
-      }
+      stake_summaries: [
+        {
+          side: "Advocate",
+          thesis: "國高中改為上午10點上課的提案，旨在改善學生睡眠不足及提升學習效率，是符合學生福祉的改革方向。",
+          strongest_points: [
+            "提案已在公共政策網路參與平台獲得萬人附議，顯示強大民意支持。",
+            "延後上課有助於改善學生睡眠品質，提升學習效率與身心發展。",
+            "教育部需在11月14日前做出回應，顯示政策推動的可能性。"
+          ],
+          weaknesses: [
+            "未能有效回應家長接送、交通、補習文化等實際衝擊。",
+            "未充分說明如何解決課程時數壓縮與教學品質問題。",
+            "過於樂觀看待教育部對提案的採納程度，忽略歷史經驗。"
+          ]
+        },
+        {
+          side: "Skeptic",
+          thesis: "國高中改10點上課的提案，雖立意良善，但實際執行將對家庭作息、學校行政、教學品質及社會運作造成巨大衝擊，且社會反對聲浪高。",
+          strongest_points: [
+            "Yahoo新聞網路投票顯示超過六成民眾不贊成，反映社會主流意見。",
+            "家長擔憂接送時間與自身工作衝突，增加家庭負擔。",
+            "教育工作者擔憂課程時數壓縮與教學品質問題。",
+            "過去類似提案(2017年9點上課)最終未被採納，僅放寬彈性。"
+          ],
+          weaknesses: [
+            "未能充分考慮學生身心發展需求。",
+            "過度保守，缺乏改革勇氣。",
+            "未提出替代方案解決學生睡眠不足問題。"
+          ]
+        }
+      ]
     },
-    debate: {
-      prosecution: [
-        { speaker: '正方', message: '多個事實查核機構已將此消息標記為可疑。', timestamp: '10:32' },
-        { speaker: '正方', message: '根據證據顯示，此消息缺乏可靠來源支持。', timestamp: '10:30' },
-        { speaker: '正方', message: '相關專家對此消息的準確性表示質疑。', timestamp: '10:35' },
-        { speaker: '正方', message: '需要考慮消息發布的時空背景。', timestamp: '10:36' },
-        { speaker: '正方', message: '需要考慮消息發布的時空背景。', timestamp: '10:36' },
-        { speaker: '正方', message: '需要考慮消息發布的時空背景。', timestamp: '10:36' },
-        { speaker: '正方', message: '需要考慮消息發布的時空背景。', timestamp: '10:36' }
-      ],
-      defense: [
-        { speaker: '反方', message: '我方當事人提供了相關證據支持此消息。', timestamp: '10:31' },
-        { speaker: '反方', message: '部分專家學者對此消息持支持態度。', timestamp: '10:33' },
-        { speaker: '反方', message: '需要考慮消息發布的時空背景。', timestamp: '10:36' }
-      ],
-      judge: {
-        verdict: '經法庭審理，此消息的真實性存在爭議，建議公眾謹慎對待，等待進一步權威驗證。',
-        confidence: 65
-      }
+    fact_check_result_json: {
+      analysis: state.curation_raw || "根據目前的資料顯示，「國高中改10點上課現在實施中」的說法並不正確。",
+      classification: "完全錯誤"
+    },
+    classification_json: {
+      Probability: "0.07950027287006378",
+      classification: "錯誤"
     }
   };
 }

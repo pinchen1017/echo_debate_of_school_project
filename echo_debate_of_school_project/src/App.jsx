@@ -17,15 +17,54 @@ function App() {
   const [analysisResult, setAnalysisResult] = useState(null)
   const [showRealTimeAnalysis, setShowRealTimeAnalysis] = useState(false)
 
+<<<<<<< HEAD
   // 檢查URL路由
+=======
+  // 頁面切換函數 - 強制滾動到最上層
+  const handleTabChange = (tab) => {
+    setCurrentTab(tab);
+    // 強制滾動到頁面最上層
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+  }
+
+  // 檢查URL路由和session_id參數
+>>>>>>> 38f50bc (佈署中失敗，重新建置doccker)
   useEffect(() => {
     const path = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    
     if (path.startsWith('/r/')) {
       setShowRealTimeAnalysis(true);
+    } else if (sessionId === 'b19e3815-6cb8-4221-a273-3818d1c9f6cc') {
+      // 如果是特定的session_id，自動載入分析結果
+      setSearchQuery('國高中改10點上課現在實施中'); // 設置搜尋查詢
+      setCurrentTab('fact_check'); // 切換到事實查核頁面
+      loadSessionAnalysis(sessionId);
     } else {
       setShowRealTimeAnalysis(false);
     }
   }, []);
+
+  // 載入session分析結果的函數
+  const loadSessionAnalysis = async (sessionId) => {
+    try {
+      // 使用相對路徑，自動適應當前域名
+      const response = await fetch(`/api/session/${sessionId}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.analysisResult) {
+          setAnalysisResult(data.analysisResult);
+        }
+      }
+    } catch (error) {
+      console.error('載入session分析結果失敗:', error);
+    }
+  };
 
   // 最新資料
   
