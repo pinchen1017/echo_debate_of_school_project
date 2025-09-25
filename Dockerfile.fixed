@@ -1,4 +1,4 @@
-# 簡化的 Dockerfile 用於 Render 部署
+# 修復的 Dockerfile 用於 Render 部署
 FROM node:18-alpine
 
 WORKDIR /app
@@ -6,8 +6,18 @@ WORKDIR /app
 # 安裝 nginx
 RUN apk add --no-cache nginx
 
-# 複製前端構建文件（假設已經構建好）
-COPY echo_debate_of_school_project/dist /usr/share/nginx/html
+# 複製前端代碼並構建
+COPY echo_debate_of_school_project/package*.json ./frontend/
+WORKDIR /app/frontend
+RUN npm ci
+COPY echo_debate_of_school_project/ ./
+RUN npm run build
+
+# 複製構建結果到 nginx 目錄
+RUN cp -r dist/* /usr/share/nginx/html/
+
+# 回到根目錄
+WORKDIR /app
 
 # 複製後端代碼
 COPY server /app/server
@@ -25,6 +35,9 @@ RUN chmod +x /app/start.sh
 # 安裝後端依賴
 WORKDIR /app/server
 RUN npm install
+
+# 回到根目錄
+WORKDIR /app
 
 # 暴露端口
 EXPOSE 80 3000

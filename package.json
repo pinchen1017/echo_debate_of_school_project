@@ -1,0 +1,21 @@
+{
+  "name": "fact-check-system",
+  "version": "1.0.0",
+  "description": "Fact Check System with Multi-Agent Analysis",
+  "scripts": {
+    "build": "cd echo_debate_of_school_project && npm install && npm run build",
+    "start": "cd server && npm install && npm start",
+    "dev": "concurrently \"cd echo_debate_of_school_project && npm run dev\" \"cd server && npm start\""
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "keywords": [
+    "fact-check",
+    "ai",
+    "analysis",
+    "multi-agent"
+  ],
+  "author": "",
+  "license": "MIT"
+}
