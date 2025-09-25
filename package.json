@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Fact Check System with Multi-Agent Analysis",
   "scripts": {
-    "build": "cd echo_debate_of_school_project && npm install && node node_modules/vite/bin/vite.js build",
+    "build": "cd echo_debate_of_school_project && npm install && npm run build",
     "start": "cd server && npm install && npm start",
     "dev": "concurrently \"cd echo_debate_of_school_project && npm run dev\" \"cd server && npm start\""
   },
